@@ -1,5 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
+import os
+
 
 url = 'https://www.bridgeport.edu'
 
@@ -13,9 +15,11 @@ headers = {
 }
 
 r = requests.get(url=url, headers=headers)
+print(r)
 soup = BeautifulSoup(r.text, 'html.parser')
 
 i = 0
+
 for img in soup.findAll('img'):
     i = i + 1
 
@@ -28,17 +32,37 @@ for img in soup.findAll('img'):
     file_name_temp = img.get('alt')
 
     if len(file_name_temp) == 0:
-        filename = str(i)
+        file_name = str(i)
     else:
-        filename = file_name_temp
+        file_name = file_name_temp
 
     if '.jpg' in image_path:
-        with open("{}.jpg".format(filename), 'wb') as f:
-            f.write(requests.get(url=url).content)
+        c_wd = os.getcwd()
 
-    elif '.png' in image_path:
-        with open("{}.jpg".format(filename), 'wb') as f:
-            f.write(requests.get(url=url).content)
+        try:
+            os.makedirs('Images/JPEG')
+        except:
+            folder_dir = c_wd + '/Images/JPEG'
+            name_file = "{}.jpg".format(file_name)
+
+            final_path = os.path.join(folder_dir, name_file)
+
+            with open(final_path , 'wb') as f:
+                f.write(requests.get(image_path).content)
+
+    if '.png' in image_path:
+            c_wd = os.getcwd()
+            try:
+                os.makedirs('Images/PNG')
+            except:
+                folder_dir = c_wd + '/Images/PNG'
+                name_file = "{}.png".format(file_name)
+
+                final_path = os.path.join(folder_dir, name_file)
+
+                with open(final_path , 'wb') as f:
+                    f.write(requests.get(image_path).content)
+
 
 
 
